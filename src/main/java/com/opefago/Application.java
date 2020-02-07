@@ -52,25 +52,5 @@ public class Application {
         example = new CompleteableFutureRxExample();
         example.test();
 
-//        Future<String> completableFuture = calculateAsync();
-//        String result = completableFuture.get();
-//        System.out.println(result);
-
-//        Future<String> future = calculateAsyncWithCancellation();
-//        future.get();
-
-//        CompletableFuture<String> futureWithSupplyAsync = CompletableFuture.supplyAsync(()-> "Hello");
-//        System.out.println(futureWithSupplyAsync.get());
-
-
-        CompletableFuture<String> completableFutureWithApplication =
-                CompletableFuture.supplyAsync(()-> "Hello");
-
-        CompletableFuture<String> futureWithThenApply =
-                completableFutureWithApplication.thenApply(s->s+ " World")
-                .thenApply( s-> s + "!");
-
-        System.out.println(futureWithThenApply.get());
-        //assertEquals("Hello", result);
     }
 }
