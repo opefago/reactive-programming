@@ -14,25 +14,15 @@ public class CompleteableFutureRxExample implements RunningExample{
     public void test() {
         String payLoad = new Gson().toJson(new Login("ope", "fago"));
 
-        final CompletableFuture<String> verifyFuture = new CompletableFuture<>();
-        HTTPUtils.post(Utils.URL + "/api/verify", payLoad, (status, response) -> {verifyFuture.complete(response);});
+        final CompletableFuture<String> verifyFuture = CompletableFuture.supplyAsync(()->
+            HTTPUtils.postBlocking(Utils.URL + "/api/verify", payLoad).getResponseData()
+        );
 
-        final CompletableFuture<String> profileFuture = new CompletableFuture<>();
-        verifyFuture.thenApplyAsync(s -> {
-            User user = new Gson().fromJson(s, User.class);
-            HTTPUtils.get(Utils.URL + "/api/profile/" + user.getId(), ((status1, response1) -> {
-                profileFuture.complete(response1);
-            }));
-            return null;
-        });
-
-        try {
-            System.out.println(profileFuture.get());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
+        final CompletableFuture<String> profileFuture = verifyFuture.thenApply((s)->{
+                User user = new Gson().fromJson(s, User.class);
+                return HTTPUtils.getBlocking(Utils.URL + "/api/profile/" + user.getId()).getResponseData();
         }
+        );
 
     }
 }
